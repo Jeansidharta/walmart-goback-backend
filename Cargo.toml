@@ -1,0 +1,29 @@
+[package]
+name = "walmart-goback-backend"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+aide = { version = "0.13.1", features = [
+	"axum",
+	"axum-extra",
+	"axum-headers",
+	"redoc",
+] }
+anyhow = "1.0.79"
+axum = { version = "0.7.3", features = ["macros"] }
+clap = { version = "4.4.13", features = ["derive"] }
+dirs = "5.0.1"
+schemars = "0.8.16"
+serde = { version = "1.0.195", features = ["derive"] }
+serde_json = "1.0.111"
+sqlx = { version = "0.7.3", features = [
+	"runtime-tokio",
+	"sqlx-sqlite",
+	"sqlite",
+] }
+thiserror = "1.0.56"
+tokio = { version = "1.35.1", features = ["full"] }
+tower-http = { version = "0.5.0", features = ["cors"] }
