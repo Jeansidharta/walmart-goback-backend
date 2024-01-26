@@ -22,39 +22,27 @@ struct CartItem {
     shelf: i64,
     subshelf: Option<i64>,
     photo: String,
-    is_cold: i64,
 }
 
 #[derive(Serialize, JsonSchema)]
-pub struct GetCartResponse {
-    cart: CartResult,
-    items: Vec<CartItem>,
-}
+pub struct GetCartResponse {}
 
 #[derive(Deserialize, JsonSchema)]
 pub struct CartId {
     cart_id: i64,
 }
 
-pub async fn get_cart(
+pub async fn delete_cart(
     State(AppState { connection }): State<AppState>,
     Path(CartId { cart_id }): Path<CartId>,
-) -> ServerResponseResult<GetCartResponse> {
-    let cart = sqlx::query_as!(
-        CartResult,
-        "SELECT id, creation_date, name FROM Cart WHERE id = ?;",
-        cart_id
-    )
-    .fetch_one(&connection)
-    .await?;
+) -> ServerResponseResult<bool> {
+    sqlx::query!("DELETE FROM Item WHERE cart_id = ?;", cart_id)
+        .execute(&connection)
+        .await?;
 
-    let items = sqlx::query_as!(
-        CartItem,
-        "SELECT id, section, corridor, shelf, subshelf, photo, is_cold FROM Item WHERE cart_id = ?;",
-        cart_id
-    )
-    .fetch_all(&connection)
-    .await?;
+    sqlx::query_scalar!("DELETE FROM Cart WHERE id = ? RETURNING id;", cart_id)
+        .fetch_one(&connection)
+        .await?;
 
-    Ok(ServerResponse::success(GetCartResponse { cart, items }).json())
+    Ok(ServerResponse::success(true).json())
 }
