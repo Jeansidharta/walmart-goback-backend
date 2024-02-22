@@ -15,7 +15,7 @@ struct CartItem {
     shelf: i32,
     subshelf: Option<i32>,
     photo: String,
-    is_cold: bool,
+    is_cold: Option<bool>,
 }
 
 #[derive(Deserialize, JsonSchema)]
@@ -83,7 +83,7 @@ pub async fn post_cart(
                     .push_bind(shelf)
                     .push_bind(subshelf)
                     .push_bind(photo)
-                    .push_bind(if is_cold { 1 } else { 0 });
+                    .push_bind(if is_cold.unwrap_or_default(){ 1 } else { 0 });
             },
         )
         .push("RETURNING id, creation_date, cart_id, section, corridor, shelf, subshelf, photo, is_cold")
